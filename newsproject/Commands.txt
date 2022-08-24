@@ -1,0 +1,49 @@
+python manage.py shell
+
+from newsapp.models import *
+
+user1 = User.objects.create_user('Vasya')
+user2 = User.objects.create_user('Ivan')
+
+author1 = Author.objects.create(name=user1) 
+author2 = Author.objects.create(name=user2, rate=3)
+
+category1 = Category.objects.create(name='sport') 
+category2 = Category.objects.create(name='business') 
+category3 = Category.objects.create(name='health') 
+category4 = Category.objects.create(name='cars') 
+
+news1 = Post.objects.create(head='Самая дорогая тачка', text='скоро появится описание', author=author1)  
+post1 = Post.objects.create(head='Лучшие продукты', text='Лучшие продукты без химии', rate=-2, type=True, author=author1)  
+post2 = Post.objects.create(head='Лучшие виды спорта', text='Лучшие виды спорта с мячом', type=True, author=author2) 
+
+PostCategory.objects.create(post_id = 1, category_id = 2)
+PostCategory.objects.create(post_id = 1, category_id = 4)
+PostCategory.objects.create(post_id=2, category_id=3)
+PostCategory.objects.create(post_id=3, category_id=1)
+
+Comment.objects.create(text='norm', post_id=1, user_id=1) 
+Comment.objects.create(text='good', post_id=2, user_id=1)
+Comment.objects.create(text='bad', rate=-10, post_id=3, user_id=2)
+Comment.objects.create(text='bad', rate=-5, post_id=2, user_id=2)
+
+Comment.objects.get(pk=2).dislike() 
+Comment.objects.get(pk=1).like() 
+Comment.objects.get(pk=3).dislike()
+Comment.objects.get(pk=4).like()
+Post.objects.get(pk=1).dislike() 
+Post.objects.get(pk=2).like()
+Post.objects.get(pk=3).like()
+
+Author.objects.get(pk=1).update_rating(1)
+Author.objects.get(pk=2).update_rating(2) 
+
+a = Author.objects.all().order_by('-rate')
+User.objects.get(id=a[0].id).username + ' ' + str(a[0].rate)
+
+b = Post.objects.all().order_by('-rate')
+str(b[0].time) + ' ' + User.objects.get(id=b[0].author.id).username + ' ' + str(b[0].rate) + ' ' + b[0].head + ' ' + b[0].preview()
+
+Comment.objects.filter(post=b[0]).values('text')  
+
+
